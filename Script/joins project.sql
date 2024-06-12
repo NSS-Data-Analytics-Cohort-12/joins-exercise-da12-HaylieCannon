@@ -11,9 +11,9 @@
 -- Answer: Semi-Tough, Release Year = 1977, Worldwide Gross = $37,187,139
 
 -- 2. What year has the highest average imdb rating?
--- SELECT s.release_year, AVG(r.imdb_rating) AS avg_imdb_rating
+-- SELECT s.release_year, ROUND(AVG(r.imdb_rating),2) AS avg_imdb_rating
 -- FROM specs AS s
--- LEFT JOIN rating AS r
+-- INNER JOIN rating AS r
 -- ON s.movie_id = r.movie_id
 -- GROUP BY s.release_year
 -- ORDER BY avg_imdb_rating DESC
@@ -24,9 +24,9 @@
 -- 3. What is the highest grossing G-rated movie? Which company distributed it?
 -- SELECT s.film_title, d.company_name, r.worldwide_gross
 -- FROM specs AS s
--- LEFT JOIN revenue AS r
+-- INNER JOIN revenue AS r
 -- USING (movie_id)
--- LEFT JOIN distributors AS d
+-- INNER JOIN distributors AS d
 -- ON s.domestic_distributor_id = d.distributor_id
 -- WHERE mpaa_rating ='G'
 -- ORDER BY r.worldwide_gross DESC
@@ -44,13 +44,12 @@
 -- ORDER BY COUNT(s.film_title) DESC;
 
 -- 5. Write a query that returns the five distributors with the highest average movie budget.
--- SELECT d.company_name, AVG(r.film_budget) AS avg_movie_budget
+-- SELECT d.company_name, CAST(AVG(r.film_budget)AS MONEY) AS avg_movie_budget
 -- FROM distributors AS d
--- INNER JOIN specs AS s
+-- LEFT JOIN specs AS s
 -- ON d.distributor_id = s.domestic_distributor_id
 -- INNER JOIN revenue AS r
 -- USING(movie_id)
--- WHERE r.film_budget IS NOT NULL
 -- GROUP BY d.company_name
 -- ORDER BY AVG(r.film_budget) DESC
 -- LIMIT 5;
@@ -71,11 +70,21 @@
 --ANSWER: Vestron Pictures - Chicago, Illanois - Dirty Dancing - imdb_rating = 7
 
 -- 7. Which have a higher average rating, movies which are over two hours long or movies which are under two hours?
--- SELECT (s.length_in_min / 60) AS length_in_hours, ROUND(AVG(r.imdb_Rating),2) AS avg_rating
+-- SELECT (s.length_in_min / 60) AS length_in_hours, ROUND(AVG(r.imdb_rating),2) AS avg_rating
 -- FROM specs AS s
 -- INNER JOIN rating AS r
 -- USING (movie_id)
 -- GROUP BY length_in_hours
+-- ORDER BY avg_rating DESC;
+
+-- SELECT Round(AVG(rating.imdb_rating),2) AS avg_rating,
+-- 	CASE WHEN specs.length_in_min > 120 THEN 'Over 2 hours' 
+-- 		WHEN specs.length_in_min < 120 THEN 'Under 2 hours' 
+-- 		ELSE 'NA' END AS length_of_movie
+-- FROM specs
+-- LEFT JOIN rating
+-- USING (movie_id)
+-- GROUP BY length_of_movie 
 -- ORDER BY avg_rating DESC;
 
 --ANSWER: Over 2 hours
